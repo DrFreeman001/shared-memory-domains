@@ -1,0 +1,33 @@
+name: shared-memory-domains
+version: "0.1.4"
+manifest_version: 2
+api_version: 1
+description: "A memory several Hermes agents share, split into domains with per-agent read/write grants, human verification of every fact, sticky revocation and an audit log. Verified facts are recalled automatically. Cooperative access control, not an OS sandbox."
+author: Ivan Laptchenko
+license: MIT
+requires_hermes: ">=0.23.0"
+tags: [memory, multi-agent, governance, audit]
+provides_tools:
+  - shared_memory_search
+  - shared_memory_propose
+  - shared_memory_access
+provides_hooks:
+  - pre_llm_call
+  - pre_tool_call
+config_schema:
+  db_path:
+    type: str
+    default: ""
+    description: "Shared SQLite file: a new file, in a dedicated directory, on a local disk. Empty = this profile's plugin data dir. Set the same absolute path in every profile of this installation that should share it."
+  admin_platforms:
+    type: str
+    default: "cli"
+    description: "Surfaces allowed to administer (grant/revoke/verify...) and to see cross-domain views (pending/audit/agents/status). Elsewhere only help and search work. Add tui/desktop only if nobody else can reach your Hermes backend: on the TUI gateway the surface name is declared by the client, local or remote."
+  admin_profiles:
+    type: str
+    default: ""
+    description: "Optional comma-separated profile names allowed to administer. Empty = any profile on an allowed surface."
+  inject_limit:
+    type: int
+    default: 6
+    description: "Max verified facts injected per turn (0 disables automatic recall)."
